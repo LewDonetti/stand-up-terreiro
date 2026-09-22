@@ -15,7 +15,8 @@ export const event = {
   dateLabel: "Sábado, 3 de outubro",
   timeLabel: "20h",
   venueName: "Tenda de Umbanda Flecha de Fogo",
-  venueAddress: "Av. 19 de Janeiro, 200",
+  venueAddress:
+    "Av. Dezenove de Janeiro, 200 - sobre loja - Vila Carrão, São Paulo - SP, 03447-040",
   whatsapp: "5511979602356", // WhatsApp do terreiro (contato/suporte)
   instagram: "https://www.instagram.com/tu.flechadefogo/",
 } as const;
