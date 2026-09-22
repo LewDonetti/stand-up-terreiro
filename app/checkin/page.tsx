@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Seal } from "@/components/brand";
@@ -18,6 +18,84 @@ type Result =
   | { kind: "notfound" }
   | null;
 
+/** Extrai o código do ingresso do texto lido (URL com ?code=... ou o código puro). */
+function extractCode(text: string): string {
+  try {
+    const url = new URL(text);
+    const c = url.searchParams.get("code");
+    if (c) return c.trim().toUpperCase();
+  } catch {
+    // não é URL — usa o texto direto
+  }
+  return text.trim().toUpperCase();
+}
+
+/** Leitor de QR pela câmera (usa html5-qrcode, carregado só no navegador). */
+function QrScanner({
+  onDecode,
+  onCancel,
+}: {
+  onDecode: (text: string) => void;
+  onCancel: () => void;
+}) {
+  const scannerRef = useRef<{ stop: () => Promise<void>; clear: () => void } | null>(
+    null,
+  );
+  const doneRef = useRef(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { Html5Qrcode } = await import("html5-qrcode");
+        if (cancelled) return;
+        const scanner = new Html5Qrcode("qr-reader");
+        scannerRef.current = scanner;
+        await scanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 240, height: 240 } },
+          (decoded: string) => {
+            if (doneRef.current) return;
+            doneRef.current = true;
+            onDecode(decoded);
+          },
+          () => {},
+        );
+      } catch {
+        if (!cancelled)
+          setErr(
+            "Não consegui acessar a câmera. Permita o acesso no navegador ou digite o código.",
+          );
+      }
+    })();
+    return () => {
+      cancelled = true;
+      const s = scannerRef.current;
+      if (s) s.stop().then(() => s.clear()).catch(() => {});
+    };
+  }, [onDecode]);
+
+  return (
+    <div className="card mt-6 p-4">
+      <div id="qr-reader" className="mx-auto w-full overflow-hidden rounded-xl" />
+      {err ? (
+        <p className="mt-3 text-sm text-[#ff9a80]">{err}</p>
+      ) : (
+        <p className="mt-3 text-center text-sm text-[var(--color-muted)]">
+          Aponte a câmera para o QR Code do ingresso
+        </p>
+      )}
+      <button
+        onClick={onCancel}
+        className="field mt-3 w-full rounded-full py-2.5 text-sm"
+      >
+        Cancelar
+      </button>
+    </div>
+  );
+}
+
 function CheckinInner() {
   const search = useSearchParams();
   const urlCode = search.get("code") ?? "";
@@ -28,8 +106,8 @@ function CheckinInner() {
   const [code, setCode] = useState(urlCode);
   const [result, setResult] = useState<Result>(null);
   const [busy, setBusy] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
-  // Detecta se já está logado como admin.
   const checkAuth = useCallback(async () => {
     const res = await fetch("/api/checkin", { cache: "no-store" });
     setAuthed(res.status !== 401);
@@ -52,7 +130,19 @@ function CheckinInner() {
     setResult({ kind: "found", ticket: data.ticket });
   }, []);
 
-  // Se veio código na URL (QR escaneado), consulta automaticamente.
+  // QR lido pela câmera → fecha o scanner, preenche e consulta.
+  const handleScan = useCallback(
+    (text: string) => {
+      setScanning(false);
+      const c = extractCode(text);
+      setCode(c);
+      setResult(null);
+      lookup(c);
+    },
+    [lookup],
+  );
+
+  // Se veio código na URL (QR escaneado pela câmera nativa), consulta automaticamente.
   useEffect(() => {
     if (authed && urlCode) lookup(urlCode);
   }, [authed, urlCode, lookup]);
@@ -120,25 +210,47 @@ function CheckinInner() {
         </Link>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setResult(null);
-          lookup(code.trim().toUpperCase());
-        }}
-        className="card mt-6 flex gap-2 p-4"
-      >
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Código do ingresso"
-          className="field w-full px-3 py-2.5 uppercase"
-          autoCapitalize="characters"
-        />
-        <button disabled={busy} className="btn-fire shrink-0 rounded-lg px-5 font-bold">
-          Buscar
-        </button>
-      </form>
+      {scanning ? (
+        <QrScanner onDecode={handleScan} onCancel={() => setScanning(false)} />
+      ) : (
+        <>
+          <button
+            onClick={() => {
+              setResult(null);
+              setScanning(true);
+            }}
+            className="btn-fire mt-6 flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-base font-bold"
+          >
+            📷 Escanear QR Code
+          </button>
+
+          <div className="mt-4 flex items-center gap-3 text-xs text-[var(--color-muted)]">
+            <span className="h-px flex-1 bg-[var(--color-line)]" />
+            ou digite o código
+            <span className="h-px flex-1 bg-[var(--color-line)]" />
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setResult(null);
+              lookup(code.trim().toUpperCase());
+            }}
+            className="card mt-3 flex gap-2 p-4"
+          >
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Código do ingresso"
+              className="field w-full px-3 py-2.5 uppercase"
+              autoCapitalize="characters"
+            />
+            <button disabled={busy} className="btn-fire shrink-0 rounded-lg px-5 font-bold">
+              Buscar
+            </button>
+          </form>
+        </>
+      )}
 
       {result && (
         <div className="mt-5">
