@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0b0705;
+  --color-bg-soft: #140f0b;
+  --color-surface: #1c1512;
+  --color-surface-2: #251b16;
+  --color-line: #3a2a20;
+  --color-fire: #ff6a1a;
+  --color-fire-dark: #e8480d;
+  --color-ember: #ff2e12;
+  --color-gold: #ffc247;
+  --color-text: #f8efe6;
+  --color-muted: #b7a396;
+  --font-display: var(--font-anton), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(60% 55% at 50% 0%, rgba(255, 106, 26, 0.16) 0%, rgba(255, 106, 26, 0) 60%),
+    radial-gradient(45% 40% at 85% 15%, rgba(255, 46, 18, 0.12) 0%, rgba(255, 46, 18, 0) 55%);
+  background-attachment: fixed;
+}
+
+/* Fire gradient text */
+.text-flame {
+  background: linear-gradient(180deg, var(--color-gold) 0%, var(--color-fire) 45%, var(--color-ember) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-fire {
+  background: linear-gradient(180deg, var(--color-fire) 0%, var(--color-fire-dark) 100%);
+  color: #1a0d05;
+  box-shadow: 0 8px 30px -8px rgba(255, 106, 26, 0.6);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-fire:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 38px -8px rgba(255, 106, 26, 0.7);
+}
+.btn-fire:active {
+  transform: translateY(0);
+}
+.btn-fire:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.card {
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.field {
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-line);
+  border-radius: 0.6rem;
+  color: var(--color-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-fire);
+  box-shadow: 0 0 0 3px rgba(255, 106, 26, 0.2);
+}
+.field::placeholder {
+  color: #8a766a;
+}
