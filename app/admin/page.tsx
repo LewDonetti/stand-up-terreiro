@@ -32,6 +32,12 @@ export default function AdminPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [showExt, setShowExt] = useState(false);
+  const [extName, setExtName] = useState("");
+  const [extEmail, setExtEmail] = useState("");
+  const [extQty, setExtQty] = useState(1);
+  const [extBusy, setExtBusy] = useState(false);
+  const [extMsg, setExtMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const fetchOrders = useCallback(async () => {
     const res = await fetch("/api/admin/orders", { cache: "no-store" });
@@ -84,6 +90,40 @@ export default function AdminPage() {
     }
     if (kind === "resend") alert("E-mail reenviado.");
     fetchOrders();
+  }
+
+  async function addExternal(e: React.FormEvent) {
+    e.preventDefault();
+    setExtMsg(null);
+    setExtBusy(true);
+    try {
+      const res = await fetch("/api/admin/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          buyers: [{ name: extName, email: extEmail, quantity: extQty }],
+        }),
+      });
+      const data = await res.json();
+      const r = data?.results?.[0];
+      if (res.ok && r?.status === "ok") {
+        setExtMsg({ ok: true, text: `Ingresso(s) enviado(s) para ${extEmail} ✅` });
+        setExtName("");
+        setExtEmail("");
+        setExtQty(1);
+        fetchOrders();
+      } else {
+        setExtMsg({
+          ok: false,
+          text: r?.error ?? r?.status ?? data?.error ?? "Falha ao cadastrar.",
+        });
+        if (r?.reference) fetchOrders();
+      }
+    } catch {
+      setExtMsg({ ok: false, text: "Erro de conexão." });
+    } finally {
+      setExtBusy(false);
+    }
   }
 
   async function logout() {
@@ -142,6 +182,82 @@ export default function AdminPage() {
           <Stat label="Arrecadado" value={formatBRL(summary.revenueCents)} />
         </div>
       )}
+
+      <div className="mt-5">
+        {!showExt ? (
+          <button
+            onClick={() => setShowExt(true)}
+            className="field rounded-full px-5 py-2.5 text-sm"
+          >
+            ➕ Adicionar venda externa (já paga)
+          </button>
+        ) : (
+          <div className="card p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg text-[var(--color-gold)]">
+                Venda externa (já paga)
+              </h2>
+              <button
+                onClick={() => {
+                  setShowExt(false);
+                  setExtMsg(null);
+                }}
+                className="text-sm text-[var(--color-muted)] hover:text-[var(--color-fire)]"
+              >
+                fechar
+              </button>
+            </div>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              Pra quem pagou por fora. Cadastra como paga e envia o ingresso com QR
+              por e-mail na hora.
+            </p>
+            <form
+              onSubmit={addExternal}
+              className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2"
+            >
+              <input
+                value={extName}
+                onChange={(e) => setExtName(e.target.value)}
+                placeholder="Nome (opcional)"
+                className="field px-3 py-2.5"
+              />
+              <input
+                required
+                type="email"
+                value={extEmail}
+                onChange={(e) => setExtEmail(e.target.value)}
+                placeholder="E-mail do comprador"
+                className="field px-3 py-2.5"
+              />
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-[var(--color-muted)]">Ingressos</label>
+                <input
+                  required
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={extQty}
+                  onChange={(e) => setExtQty(Math.max(1, Number(e.target.value) || 1))}
+                  className="field w-24 px-3 py-2.5"
+                />
+              </div>
+              <button
+                disabled={extBusy}
+                className="btn-fire rounded-full py-2.5 font-bold"
+              >
+                {extBusy ? "Enviando…" : "Cadastrar e enviar ingresso"}
+              </button>
+            </form>
+            {extMsg && (
+              <p
+                className={`mt-3 text-sm ${extMsg.ok ? "text-[#7ee081]" : "text-[#ff9a80]"}`}
+              >
+                {extMsg.text}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       <Section title={`A confirmar (${pending.length})`}>
         {pending.length === 0 && <Empty>Nenhum pedido aguardando.</Empty>}
