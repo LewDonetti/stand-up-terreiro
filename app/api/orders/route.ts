@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { ticketPriceCents, maxPerOrder } from "@/lib/config";
 import { generateReference, isValidEmail, onlyDigits } from "@/lib/format";
+import { sendAdminNotification } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -61,6 +62,20 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (!error && data) {
+      // Avisa o organizador por e-mail (não bloqueia a resposta se falhar).
+      try {
+        await sendAdminNotification({
+          reference: data.reference,
+          buyerName: name,
+          buyerEmail: email,
+          buyerPhone: phone,
+          quantity,
+          totalCents: total,
+          kind: "new",
+        });
+      } catch (e) {
+        console.error("Falha ao notificar organizador (novo pedido):", e);
+      }
       return NextResponse.json({ reference: data.reference });
     }
     // 23505 = unique_violation (referência repetida) → tenta outra

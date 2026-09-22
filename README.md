@@ -52,3 +52,5 @@ No painel do serviço, cadastre as mesmas variáveis do `.env.local`
 - **Preço**: variável `TICKET_PRICE_CENTS` (em centavos, ex.: `5000` = R$ 50,00).
 - **Dados do evento** (nome, data, local): [`lib/config.ts`](lib/config.ts).
 - **Senha do painel**: variável `ADMIN_PASSWORD`.
+- **Avisos por e-mail**: variável `ADMIN_NOTIFY_EMAIL` — recebe um e-mail a cada
+  novo pedido e a cada comprovante enviado (deixe em branco para desativar).

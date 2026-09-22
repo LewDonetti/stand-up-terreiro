@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase, COMPROVANTES_BUCKET } from "@/lib/supabase";
+import { sendAdminNotification } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -16,7 +17,9 @@ export async function POST(
 
   const { data: order, error: findErr } = await supabase
     .from("orders")
-    .select("id, reference, status")
+    .select(
+      "id, reference, status, buyer_name, buyer_email, buyer_phone, quantity, total_cents",
+    )
     .eq("reference", reference)
     .single();
 
@@ -69,6 +72,25 @@ export async function POST(
   if (updErr) {
     console.error("Erro ao salvar comprovante:", updErr);
     return NextResponse.json({ error: "Falha ao registrar o comprovante." }, { status: 500 });
+  }
+
+  // Avisa o organizador que chegou um comprovante (com link pra ver).
+  try {
+    const { data: signed } = await supabase.storage
+      .from(COMPROVANTES_BUCKET)
+      .createSignedUrl(path, 60 * 60 * 24 * 7);
+    await sendAdminNotification({
+      reference: order.reference,
+      buyerName: order.buyer_name,
+      buyerEmail: order.buyer_email,
+      buyerPhone: order.buyer_phone,
+      quantity: order.quantity,
+      totalCents: order.total_cents,
+      kind: "comprovante",
+      comprovanteUrl: signed?.signedUrl ?? null,
+    });
+  } catch (e) {
+    console.error("Falha ao notificar organizador (comprovante):", e);
   }
 
   return NextResponse.json({ ok: true });
