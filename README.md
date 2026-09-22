@@ -23,14 +23,14 @@ por e-mail. A entrada é validada por uma tela de check-in.
 3. Em **Project Settings → API**, copie a `Project URL` e a chave
    **`service_role`** (secreta).
 
-### 2. E-mail — Resend (grátis)
-1. Crie conta em [resend.com](https://resend.com) → **API Keys** → gere uma chave.
-2. Para testes, use o remetente `onboarding@resend.dev`. Para produção, verifique
-   um domínio próprio e ajuste `EMAIL_FROM`.
+### 2. E-mail — Gmail (grátis)
+1. Na conta do Gmail que vai enviar os ingressos, ligue a **Verificação em 2 etapas**.
+2. Crie uma **Senha de app** em <https://myaccount.google.com/apppasswords> (16 caracteres).
+3. Preencha `GMAIL_USER`, `GMAIL_APP_PASSWORD` e `EMAIL_FROM` no `.env.local`.
 
 ### 3. Variáveis de ambiente
 Copie `.env.local.example` para `.env.local` e preencha (chave Pix, preço,
-Supabase, Resend, senha do admin). **Nunca suba o `.env.local` para o GitHub.**
+Supabase, Gmail, senha do admin). **Nunca suba o `.env.local` para o GitHub.**
 
 ## Rodar localmente
 

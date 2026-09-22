@@ -1,27 +1,32 @@
 import "server-only";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 import { event, siteUrl } from "./config";
 import { formatBRL } from "./format";
 import type { Order, Ticket } from "./types";
 
 /**
- * Envia o e-mail com os ingressos (um QR Code por ingresso).
+ * Envia o e-mail com os ingressos (um QR Code por ingresso) via Gmail (SMTP).
+ * Requer GMAIL_USER e GMAIL_APP_PASSWORD (senha de app do Google) no ambiente.
  * Cada QR aponta para a URL de check-in, que a equipe da porta valida.
  */
 export async function sendTicketEmail(
   order: Order,
   tickets: Ticket[],
 ): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "Flecha de Fogo <onboarding@resend.dev>";
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY não configurada.");
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  const from = process.env.EMAIL_FROM ?? `Flecha de Fogo <${user ?? ""}>`;
+  if (!user || !pass) {
+    throw new Error("Gmail não configurado: defina GMAIL_USER e GMAIL_APP_PASSWORD.");
   }
 
-  const resend = new Resend(apiKey);
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 
-  // Gera um PNG de QR por ingresso.
+  // Gera um PNG de QR por ingresso (anexado ao e-mail).
   const attachments = await Promise.all(
     tickets.map(async (t, i) => {
       const checkinUrl = `${siteUrl()}/checkin?code=${encodeURIComponent(t.code)}`;
@@ -33,7 +38,7 @@ export async function sendTicketEmail(
       });
       return {
         filename: `ingresso-${i + 1}-${t.code}.png`,
-        content: png.toString("base64"),
+        content: png,
       };
     }),
   );
@@ -83,7 +88,7 @@ export async function sendTicketEmail(
     </div>
   </div>`;
 
-  await resend.emails.send({
+  await transporter.sendMail({
     from,
     to: order.buyer_email,
     subject: `🎟️ Seus ingressos — ${event.artist} na Flecha de Fogo`,
