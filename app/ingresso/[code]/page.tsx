@@ -2,6 +2,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { getSupabase } from "@/lib/supabase";
 import { event, siteUrl } from "@/lib/config";
+import { Seal } from "@/components/brand";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,7 +51,8 @@ export default async function IngressoPage({
     <main className="mx-auto w-full max-w-sm flex-1 px-4 py-8">
       <div className="card overflow-hidden">
         <div className="bg-[linear-gradient(180deg,var(--color-fire),var(--color-fire-dark))] px-6 py-5 text-center">
-          <p className="font-display text-sm uppercase tracking-widest text-[#1a0d05]">
+          <Seal size={56} className="mx-auto mb-2" />
+          <p className="font-display text-xs uppercase tracking-widest text-[#1a0d05]">
             {event.tagline}
           </p>
           <h1 className="font-display text-2xl text-[#1a0d05]">{event.title}</h1>

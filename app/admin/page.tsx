@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { formatBRL } from "@/lib/format";
+import { Seal } from "@/components/brand";
 
 interface AdminOrder {
   id: string;
@@ -96,6 +97,7 @@ export default function AdminPage() {
   if (needLogin) {
     return (
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16">
+        <Seal size={56} className="mb-4" />
         <h1 className="font-display text-3xl text-flame">Painel do organizador</h1>
         <form onSubmit={login} className="card mt-6 space-y-4 p-6">
           <label className="block">

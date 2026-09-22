@@ -52,9 +52,11 @@ export async function sendTicketEmail(
   const html = `
   <div style="background:#0b0705;padding:28px 0;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:560px;margin:0 auto;background:#1c1512;border:1px solid #3a2a20;border-radius:16px;overflow:hidden;">
-      <div style="background:linear-gradient(180deg,#ff6a1a,#e8480d);padding:22px 26px;">
-        <div style="color:#1a0d05;font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;">${event.tagline}</div>
-        <div style="color:#1a0d05;font-size:24px;font-weight:900;margin-top:4px;">${event.title}</div>
+      <div style="height:4px;background:linear-gradient(90deg,#7b2ff7,#2f6bff,#16a34a,#ffc247,#ff6a1a,#ff2e12,#ff4fa3);"></div>
+      <div style="background:linear-gradient(180deg,#ff6a1a,#e8480d);padding:22px 26px;text-align:center;">
+        <img src="${siteUrl()}/logo.jpg" alt="Flecha de Fogo" width="64" height="64" style="border-radius:50%;background:#fbf6ee;display:inline-block;" />
+        <div style="color:#1a0d05;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-top:8px;">${event.tagline}</div>
+        <div style="color:#1a0d05;font-size:22px;font-weight:900;margin-top:2px;">${event.title}</div>
       </div>
       <div style="padding:26px;color:#f8efe6;">
         <p style="font-size:16px;margin:0 0 16px;">Olá, ${order.buyer_name.split(" ")[0]}! Pagamento confirmado ✅</p>

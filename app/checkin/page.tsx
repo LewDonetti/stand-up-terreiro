@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Seal } from "@/components/brand";
 
 interface TicketInfo {
   code: string;
@@ -91,6 +92,7 @@ function CheckinInner() {
   if (!authed) {
     return (
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16">
+        <Seal size={56} className="mb-4" />
         <h1 className="font-display text-3xl text-flame">Check-in</h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">Acesso da equipe.</p>
         <form onSubmit={login} className="card mt-6 space-y-4 p-6">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatBRL } from "@/lib/format";
+import { BrandMark } from "@/components/brand";
 
 export default function CheckoutForm({
   priceCents,
@@ -49,11 +50,14 @@ export default function CheckoutForm({
 
   return (
     <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
-      <Link href="/" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-fire)]">
-        ← voltar
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <BrandMark size={40} />
+        <Link href="/" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-fire)]">
+          ← voltar
+        </Link>
+      </div>
 
-      <h1 className="font-display mt-4 text-4xl text-flame">Comprar ingresso</h1>
+      <h1 className="font-display text-4xl text-flame">Comprar ingresso</h1>
       <p className="mt-2 text-sm text-[var(--color-muted)]">{eventLine}</p>
 
       <form onSubmit={handleSubmit} className="card mt-6 space-y-5 p-6">

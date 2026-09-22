@@ -35,6 +35,29 @@ body {
   background-attachment: fixed;
 }
 
+/* Barra arco-íris (mandala da logo) */
+.rainbow-bar {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #7b2ff7,
+    #2f6bff,
+    #16a34a,
+    #ffc247,
+    #ff6a1a,
+    #ff2e12,
+    #ff4fa3
+  );
+}
+
+/* Selo/emblema: coloca a logo (fundo claro) num disco branco */
+.seal {
+  background: #fbf6ee;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px rgba(255, 194, 71, 0.5), 0 6px 22px -6px rgba(0, 0, 0, 0.6);
+}
+
 /* Fire gradient text */
 .text-flame {
   background: linear-gradient(180deg, var(--color-gold) 0%, var(--color-fire) 45%, var(--color-ember) 100%);

@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import QRCode from "qrcode";
 import { event } from "@/lib/config";
 import { formatBRL } from "@/lib/format";
+import { BrandMark } from "@/components/brand";
 
 interface OrderData {
   reference: string;
@@ -110,11 +111,14 @@ export default function PedidoPage() {
 
   return (
     <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
-      <Link href="/" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-fire)]">
-        ← início
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <BrandMark size={40} />
+        <Link href="/" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-fire)]">
+          ← início
+        </Link>
+      </div>
 
-      <p className="mt-4 text-sm text-[var(--color-muted)]">Pedido {order.reference}</p>
+      <p className="text-sm text-[var(--color-muted)]">Pedido {order.reference}</p>
       <h1 className="font-display text-3xl text-flame">
         {order.status === "confirmed"
           ? "Pagamento confirmado! 🎉"

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { event, ticketPriceCents } from "@/lib/config";
 import { formatBRL } from "@/lib/format";
+import { BrandMark, Seal } from "@/components/brand";
 
 export default function Home() {
   const wpp = `https://wa.me/${event.whatsapp}`;
@@ -10,12 +11,7 @@ export default function Home() {
     <main className="flex-1">
       {/* Top bar */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🏹</span>
-          <span className="font-display text-lg tracking-wide text-[var(--color-gold)]">
-            TU FLECHA DE FOGO
-          </span>
-        </div>
+        <BrandMark size={46} />
         <Link
           href="/comprar"
           className="btn-fire hidden rounded-full px-5 py-2 text-sm font-bold sm:inline-block"
@@ -27,6 +23,14 @@ export default function Home() {
       {/* Hero */}
       <section className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 pb-8 pt-4 md:grid-cols-2 md:pt-10">
         <div className="order-2 md:order-1">
+          <div className="mb-5 flex items-center gap-3">
+            <Seal size={52} />
+            <span className="text-sm text-[var(--color-muted)]">
+              A Tenda de Umbanda
+              <br />
+              <span className="text-[var(--color-gold)]">Flecha de Fogo</span> apresenta
+            </span>
+          </div>
           <p className="font-display text-sm uppercase tracking-[0.2em] text-[var(--color-fire)]">
             {event.tagline}
           </p>
@@ -127,8 +131,15 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-[var(--color-line)]">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-[var(--color-muted)] sm:flex-row">
-          <span>© {new Date().getFullYear()} Tenda de Umbanda Flecha de Fogo</span>
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-7 text-sm text-[var(--color-muted)] sm:flex-row">
+          <div className="flex items-center gap-3">
+            <Seal size={40} />
+            <span>
+              © {new Date().getFullYear()} Tenda de Umbanda Flecha de Fogo
+              <br />
+              {event.venueAddress}
+            </span>
+          </div>
           <div className="flex items-center gap-4">
             <a href={event.instagram} target="_blank" rel="noreferrer" className="hover:text-[var(--color-fire)]">
               Instagram
