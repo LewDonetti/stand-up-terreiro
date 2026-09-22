@@ -49,6 +49,6 @@ No painel do serviço, cadastre as mesmas variáveis do `.env.local`
 
 ## Ajustes rápidos
 
-- **Preço**: variável `TICKET_PRICE_CENTS` (em centavos, ex.: `4000` = R$ 40,00).
+- **Preço**: variável `TICKET_PRICE_CENTS` (em centavos, ex.: `5000` = R$ 50,00).
 - **Dados do evento** (nome, data, local): [`lib/config.ts`](lib/config.ts).
 - **Senha do painel**: variável `ADMIN_PASSWORD`.

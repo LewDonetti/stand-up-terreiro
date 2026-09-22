@@ -20,8 +20,8 @@ export const event = {
   instagram: "https://www.instagram.com/tu.flechadefogo/",
 } as const;
 
-/** Preço unitário do ingresso em centavos. Ex.: 4000 = R$ 40,00. */
-export const ticketPriceCents = Number(process.env.TICKET_PRICE_CENTS ?? 4000);
+/** Preço unitário do ingresso em centavos. Ex.: 5000 = R$ 50,00. */
+export const ticketPriceCents = Number(process.env.TICKET_PRICE_CENTS ?? 5000);
 
 /** Máximo de ingressos por pedido. */
 export const maxPerOrder = Number(process.env.MAX_PER_ORDER ?? 10);
